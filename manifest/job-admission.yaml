@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: job-admission
+  name: job-admission
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-admission
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: job-admission
+    spec:
+      containers:
+        - name: job-admission
+          image: mainak90/job-admission:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: admission-certs
+              mountPath: /certs
+              readOnly: true
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 25m
+            limits:
+              memory: 100Mi
+              cpu: 100m
+      volumes:
+        - name: admission-certs
+          secret:
+            secretName: admission-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: job-admission
+  name: job-admission
+spec:
+  ports:
+    - name: 443-8443
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: job-admission
+  type: ClusterIP

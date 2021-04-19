@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta13
+kind: Config
+metadata:
+  name: job-admission
+build:
+  artifacts:
+    - image: mainak90/job-admission
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+      - manifest/job-admission.yaml
+      - certs/manifest.yaml
